@@ -1,0 +1,68 @@
+tarefas = [] #gerenciador de tarefas em python
+
+def adicionar_tarefa():
+    tarefa = input("Digite a nova tarefa: ")
+    tarefas.append({"tarefa": tarefa, "concluída": False})
+    print(f"Tarefa '{tarefa}' adicionada!")
+
+def listar_tarefas():
+    if len(tarefas) == 0:
+        print("Nenhuma tarefa encontrada.")
+    else:
+        print("\nLista de tarefas:")
+        for i, tarefa in enumerate(tarefas):
+            status = "Concluída" if tarefa["concluída"] else "Pendente"
+            print(f"{i + 1}. {tarefa['tarefa']} - {status}")
+
+def remover_tarefa():
+    listar_tarefas()
+    if len(tarefas) == 0:
+        return
+    try:
+        indice = int(input("Digite o número da tarefa que deseja remover: ")) - 1
+        if 0 <= indice < len(tarefas):
+            tarefa_removida = tarefas.pop(indice)
+            print(f"Tarefa '{tarefa_removida['tarefa']}' removida.")
+        else:
+            print("Número inválido.")
+    except ValueError:
+        print("Por favor, insira um número válido.")
+
+def marcar_como_concluída():
+    listar_tarefas()
+    if len(tarefas) == 0:
+        return
+    try:
+        indice = int(input("Digite o número da tarefa a ser concluída: ")) - 1
+        if 0 <= indice < len(tarefas):
+            tarefas[indice]["concluída"] = True
+            print(f"Tarefa '{tarefas[indice]['tarefa']}' marcada como concluída!")
+        else:
+            print("Número inválido.")
+    except ValueError:
+        print("Por favor, insira um número válido.")
+
+def gerenciador_de_tarefas():
+    while True:
+        print("\n----- Menu -----")
+        print("1. Adicionar tarefa")
+        print("2. Listar tarefas")
+        print("3. Remover tarefa")
+        print("4. Marcar tarefa como concluída")
+        print("5. Sair")
+
+        escolha = input("Escolha uma opção: ")
+        if escolha == "1":
+            adicionar_tarefa()
+        elif escolha == "2":
+            listar_tarefas()
+        elif escolha == "3":
+            remover_tarefa()
+        elif escolha == "4":
+            marcar_como_concluída()
+        elif escolha == "5":
+            break
+        else:
+            print("Opção inválida, tente novamente")
+
+gerenciador_de_tarefas()
