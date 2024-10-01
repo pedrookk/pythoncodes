@@ -1,0 +1,51 @@
+from flask import Blueprint, request, jsonify
+from models import db, User, Task
+from flask_jwt_extended import create_acess_token, get_jwt_identity, jwt_required, get_jwt_indentity
+
+auth_routes = Blueprint('auth', __name__)
+task_routes = Blueprint('tasks', __name__)
+
+#ESSA PARTE DA DESGRAÇA TODA VAI CRIAR UM USUÁRIO NOVO AAAAAA TO FICANDO LOUCOOOOO
+@auth_routes.route('/register', methods=['POST'])
+def register():
+    data = request.get_jason()
+
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({"Message": "User already exists"}), 400
+    
+    new_user = User(name=data['name'], email=data['email'])
+    new_user.set_password(data['password'])
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message" : "User created sucessfully!"}), 201
+
+#ROTA PRA A DESGRAÇA DO LOGIN (preciso de um neurologista urgente)
+@auth_routes.route('/login', methods=['POST'])
+@jwt_required()
+def create_task():
+    
+    user_id = get_jwt_identity()
+    data = request.get_jason()
+
+    new_task = Task(
+        title=data['title'],
+        description=data['description'],
+        user_id=user_id
+    )
+    db.session.add(new_task)
+    db.session.commit()
+    
+    return jsonify({"message": "Task created sucessfully"}), 201
+
+#aqui o bagulho é pra pegar as tarefas do usuário
+
+@task_routes.route('/', methods=['GET'])
+@jwt_required()
+def get_tasks():
+    user_id = get_jwt_identity()
+    tasks = Task.query.filter_by(user_id=user_id).all()
+
+    result = [{'id': task.id, 'title': task.title, 'description': task.description, 'is_done':
+               task.is_done} for task in tasks]
+    return jsonify(result), 200
