@@ -1,0 +1,18 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3' #banco de dados SQLitq
+app.config['JWT_SECRET_KEY'] = '12345678910'
+db = SQLAlchemy(app)
+
+#agora codigo que vai importar as rotas
+from routes import auth_routes, task_routes
+
+app.register_blueprint(auth_routes, url_prefix='/auth')
+app.register_blueprint(task_routes, url_prefix ='/tasks')
+
+if __name__ == '__main__':
+    db.create_all() #é esse cagonésimo do código responsável por armazenar os usuários e tabelas
+    app.run(debug=True)
